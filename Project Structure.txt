@@ -1,0 +1,114 @@
+START
+↓
+Create Resource Group (azurerm_resource_group)
+↓
+Create Key Vault (azurerm_key_vault)
+↓
+Store Secrets in Key Vault (azurerm_key_vault_secret)
+↓
+Create Container Registry - ACR (azurerm_container_registry)
+↓
+Create SQL Server (azurerm_mssql_server)
+↓
+Create SQL Database (azurerm_mssql_database)
+↓
+Create Kubernetes Cluster - AKS (azurerm_kubernetes_cluster)
+|-- AKS pulls images from ACR
+|-- AKS may read secrets from Key Vault
+|-- AKS may connect to SQL Database
+↓  
+CI/CD Pipeline:
+   - Build Docker images
+   - Push to ACR
+   - Deploy YAML/Helm to AKS
+|
+↓
+Application Running on AKS with Microservices
+  |
+END
+--------------------------------------------------------------
+ ┌───────────────────────┐
+ │ providers.tf          │
+ │ Load Azure provider   │
+ └──────────┬────────────┘
+            ↓
+ ┌───────────────────────┐
+ │ variables.tf + tfvars │
+ │ Load input variables  │
+ └──────────┬────────────┘
+            ↓
+ ┌───────────────────────┐
+ │ main.tf               │
+ │ Calls all modules     │
+ └──────────┬────────────┘
+            ↓
+ ┌──────────────────────────────────────────┐
+ │ MODULE EXECUTION ORDER                   │
+ │ 1. Resource Group                        │
+ │ 2. Key Vault                             │
+ │ 3. Key Vault Secrets                     │
+ │ 4. Container Registry (ACR)              │
+ │ 5. SQL Server                            │
+ │ 6. SQL Database                          │
+ │ 7. AKS Kubernetes Cluster                │
+ └───────────────────┬──────────────────────┘
+                     ↓
+ ┌──────────────────────────────────────────┐
+ │ CI/CD Pipeline                           │
+ │ Build → Push Images to ACR → Deploy AKS  │
+ └───────────────────┬──────────────────────┘
+                     ↓
+                 APPLICATION LIVE
+----------------------------------------------------------------
+Terraform Execution Flow (High-Level)
+START
+↓
+Load Providers (providers.tf)
+↓
+Load Variables (variables.tf + terraform.tfvars)
+↓
+Validate Module Calls (main.tf)
+↓
+Initialize Modules (terraform init)
+↓
+Create Resources in Dependency Order:
+--------------------------------------------------------------------
+Module Calling Flow (Inside main.tf)
+main.tf
+  |
+  |-- module.resource_group
+  |
+  |-- module.key_vault
+  |
+  |-- module.key_vault_secrets
+  |
+  |-- module.acr
+  |
+  |-- module.sql_server
+  |
+  |-- module.sql_database
+  |
+  |-- module.aks
+---------------------------------------------------------------------
+Real Project Flow (End-to-End Azure Microservices)
+Developer Pushes Code
+        ↓
+Azure DevOps / GitHub Pipeline Starts
+        ↓
+Terraform Plan
+Terraform Apply
+        ↓
+Azure Resources Created:
+   - Resource Group
+   - Key Vault + Secrets
+   - ACR
+   - SQL Server + DB
+   - AKS Cluster
+        ↓
+Build Microservices (Docker)
+        ↓
+Push Image to ACR
+        ↓
+Deploy YAML/Helm to AKS
+        ↓
+Microservices Running Successfully
