@@ -24,24 +24,24 @@ CI/CD Pipeline:
 |
 ↓
 Application Running on AKS with Microservices
-  |
+|
 END
 --------------------------------------------------------------
- ┌───────────────────────┐
- │ providers.tf          │
- │ Load Azure provider   │
- └──────────┬────────────┘
-            ↓
- ┌───────────────────────┐
- │ variables.tf + tfvars │
- │ Load input variables  │
- └──────────┬────────────┘
-            ↓
- ┌───────────────────────┐
- │ main.tf               │
- │ Calls all modules     │
- └──────────┬────────────┘
-            ↓
+           ┌───────────────────────┐
+           │ providers.tf          │
+           │ Load Azure provider   │
+           └──────────┬────────────┘
+                      ↓
+           ┌───────────────────────┐
+           │ variables.tf + tfvars │
+           │ Load input variables  │
+           └──────────┬────────────┘
+                      ↓
+           ┌───────────────────────┐
+           │ main.tf               │
+           │ Calls all modules     │
+           └──────────┬────────────┘
+                      ↓
  ┌──────────────────────────────────────────┐
  │ MODULE EXECUTION ORDER                   │
  │ 1. Resource Group                        │
@@ -59,7 +59,17 @@ END
  └───────────────────┬──────────────────────┘
                      ↓
                  APPLICATION LIVE
-----------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| S.No | Azure Resource                 | Why We Use It                                                                                                          |
+| ---- |--------------------------------|----------------------------------------------------------------------------------------------------------------------- | 
+| 1    | Resource Group                 | Organizes and groups all related Azure resources. Helps in management, access control, and billing.                    |
+| 2    | Key Vault                      | Securely stores secrets, passwords, certificates, connection strings, and sensitive data.                              |
+| 3    | Key Vault Secrets              | Actual values stored like API keys, SQL passwords, connection strings, tokens. Accessed by apps, Terraform, pipelines. |
+| 4    | ACR (Azure Container Registry) | Stores Docker images used by microservices. Integrates with AKS, DevOps, GitHub pipelines.                             |
+| 5    | SQL Server                     | Logical server that hosts one or more SQL databases. Provides firewall, auditing, and server-level settings.           |
+| 6    | SQL Database                   | Stores application data (todo items, users, tasks). Managed, scalable, secure relational DB.                           |
+| 7    | AKS Kubernetes Cluster         | Runs microservices containers, provides autoscaling, load balancing, and deployment of apps through CI/CD.             |
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Terraform Execution Flow (High-Level)
 START
 ↓
